@@ -1,5 +1,22 @@
 #include "header.h"
 
+// Pop top of operator stack into output stack
+void popOperatorOutput(struct Token *tokens, int *token, struct Token *operatorStack, int *operator) {
+	if (*operator == -1) {
+		puts("; ERR Popping negative value");
+		return;
+	}
+
+	(*token)++;
+
+	// Copy structure value
+	tokens[*token] = operatorStack[*operator];
+
+	// Allow values at the bottom to be popped
+	if (*operator != 0) {
+		(*operator)--;
+	}
+}
 
 int parse(struct Token *tokens, char string[]) {
 	// Token read for 
@@ -8,65 +25,66 @@ int parse(struct Token *tokens, char string[]) {
 
 	// Operator stack
 	struct Token operatorStack[10];
-	int operator = 0;
+	int operator = -1;
+	int token = -1;
 
-	int token = 0;
-
-	// Now, the shunting yard algorithm.
+	// The shunting yard algorithm.
 	// Designed by Edsger Dijkstra in 1961.
 	while (!lex(&reading, string, &c)) {
 		if (reading.type == INTEGER) {
-			tokens[token] = reading;
 			token++;
-		} else if (reading.type == PAREN_LEFT) {
-			operatorStack[operator] = reading;
+			tokens[token] = reading;
+		} else if (reading.type == PAREN_LEFT || reading.type == TEXT) {
 			operator++;
+			operatorStack[operator] = reading;
 		} else if (reading.type == PAREN_RIGHT) {
-			operator--;
-			while (operator != 0 && operatorStack[operator].type != PAREN_LEFT) {
-				tokens[token].type = operatorStack[operator].type;
-				token++;
-				operator--;
-
-				if (operator < 0) {
-					puts("; ERR: Mismatched parenthesis.");
+			while (operator != -1 && operatorStack[operator].type != PAREN_LEFT) {
+				if (operator < -1) {
+					puts("; ERR: Mismatched parenthesis.1");
 					return -1;
 				}
+				
+				popOperatorOutput(tokens, &token, operatorStack, &operator);
 			}
 
-			// Discard left parenthesis
 			if (operatorStack[operator].type == PAREN_LEFT) {
+				// Discard left parenthesis
 				operator--;
-			} else {
-				puts("; ERR: Mismatched parenthesis.");
-				return -1;
+			} else if (operatorStack[operator].type == TEXT) {
+				// Pop functions
+				popOperatorOutput(tokens, &token, operatorStack, &operator);
 			}
 
-			operator++; // Move to unused
+			// Pop the remaining operators to the output
+			// while (operator != -1) {
+				// popOperatorOutput(tokens, &token, operatorStack, &operator);
+			// }
 		} else {
 			// Else, it is an operator. (+, *, /)
 	
 			// Push remaining operators to output
-			operator--;
-			while (operator != -1 && tokens[token].type != PAREN_LEFT) {
-				tokens[token].type = operatorStack[operator].type;
-				token++;
-				operator--;
+			while (operator != -1 && operatorStack[operator].type != PAREN_LEFT) {
+				popOperatorOutput(tokens, &token, operatorStack, &operator);
 			}
 			
-			operator++; // Counteract the --
+			operator++; // Counteract the -1
 			
 			operatorStack[operator].type = reading.type;
-			operator++; // Move to unused
 		}
 	}
 
+	if (operatorStack[operator].type == PAREN_LEFT
+		|| operatorStack[operator].type == PAREN_RIGHT) {
+		puts("; ERR: Mismatched parenthesis.3");
+		return -1;
+	}
+	
 	// Push the remaining operators to the output
-	while (operator != 0) {
-		operator--;
-		tokens[token].type = operatorStack[operator].type;
+	while (operator != -1) {
 		token++;
+		tokens[token] = operatorStack[operator];
+		operator--;
 	}
 
-	return token;
+	return token + 1;
 }

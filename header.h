@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+
 // Types for 
 enum Type {
 	MULT, ADD, INTEGER, TEXT,

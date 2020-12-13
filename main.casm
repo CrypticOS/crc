@@ -1,0 +1,18 @@
+var ga 0
+var gb 0
+var gc 0
+var gc 0
+var gr 0
+jmp top
+	add:
+	equ gb 0 a.end
+	add ga 1
+	sub gb 1
+	jmp add
+	a.end:
+	ret
+
+	print:
+	prt ga
+	ret
+top:
