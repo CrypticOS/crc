@@ -1,16 +1,15 @@
 #include "header.h"
 
 // Pop top of operator stack into output stack
-void popOperatorOutput(struct Token *tokens, int *token, struct Token *operatorStack, int *operator) {
+void popOperatorOutput(struct Token *tokens, size_t *token, struct Token *operatorStack, int *operator) {
 	if (*operator == -1) {
 		puts("; ERR Popping negative value");
 		return;
 	}
 
-	(*token)++;
-
 	// Copy structure value
 	tokens[*token] = operatorStack[*operator];
+	(*token)++;
 
 	// Allow values at the bottom to be popped
 	if (*operator != 0) {
@@ -18,33 +17,41 @@ void popOperatorOutput(struct Token *tokens, int *token, struct Token *operatorS
 	}
 }
 
-int parse(struct Token *tokens, char string[]) {
-	// Token read for 
-	size_t c = 0;
+int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
+	*token = 0;
+	// Token read for lex
 	struct Token reading;
 
 	// Operator stack
 	struct Token operatorStack[10];
 	int operator = -1;
-	int token = -1;
 
-	// The shunting yard algorithm.
+	// Based on the Shunting Yard Algorithm
 	// Designed by Edsger Dijkstra in 1961.
-	while (!lex(&reading, string, &c)) {
-		if (reading.type == INTEGER) {
-			token++;
-			tokens[token] = reading;
-		} else if (reading.type == PAREN_LEFT || reading.type == TEXT) {
+	while (!lex(&reading, string, c)) {
+		switch (reading.type) {
+		case FILE_END:
+			return PARSE_EOF;
+		case SEMICOLON:
+			goto endRead;
+		case INTEGER:
+			tokens[*token] = reading;
+			(*token)++;
+			break;
+		case PAREN_LEFT:
+		case EQUAL:
+		case TEXT:
 			operator++;
 			operatorStack[operator] = reading;
-		} else if (reading.type == PAREN_RIGHT) {
+			break;
+		case PAREN_RIGHT:
 			while (operator != -1 && operatorStack[operator].type != PAREN_LEFT) {
 				if (operator < -1) {
-					puts("; ERR: Mismatched parenthesis.1");
-					return -1;
+					puts("; ERR: Mismatched right parenthesis.");
+					return PARSE_ERR;
 				}
 				
-				popOperatorOutput(tokens, &token, operatorStack, &operator);
+				popOperatorOutput(tokens, token, operatorStack, &operator);
 			}
 
 			if (operatorStack[operator].type == PAREN_LEFT) {
@@ -52,39 +59,38 @@ int parse(struct Token *tokens, char string[]) {
 				operator--;
 			} else if (operatorStack[operator].type == TEXT) {
 				// Pop functions
-				popOperatorOutput(tokens, &token, operatorStack, &operator);
+				popOperatorOutput(tokens, token, operatorStack, &operator);
 			}
-
-			// Pop the remaining operators to the output
-			// while (operator != -1) {
-				// popOperatorOutput(tokens, &token, operatorStack, &operator);
-			// }
-		} else {
+			
+			break;
+		default:
 			// Else, it is an operator. (+, *, /)
 	
 			// Push remaining operators to output
-			while (operator != -1 && operatorStack[operator].type != PAREN_LEFT) {
-				popOperatorOutput(tokens, &token, operatorStack, &operator);
+			while (operator != -1 && operatorStack[operator].type != PAREN_LEFT
+					&& operatorStack[operator].type != EQUAL) {
+				popOperatorOutput(tokens, token, operatorStack, &operator);
 			}
 			
 			operator++; // Counteract the -1
-			
 			operatorStack[operator].type = reading.type;
 		}
 	}
 
 	if (operatorStack[operator].type == PAREN_LEFT
 		|| operatorStack[operator].type == PAREN_RIGHT) {
-		puts("; ERR: Mismatched parenthesis.3");
-		return -1;
+		puts("; ERR: Mismatched left parenthesis.3");
+		return PARSE_ERR;
 	}
+
+	endRead:
 	
 	// Push the remaining operators to the output
 	while (operator != -1) {
-		token++;
-		tokens[token] = operatorStack[operator];
+		tokens[*token] = operatorStack[operator];
 		operator--;
+		(*token)++;
 	}
 
-	return token + 1;
+	return PARSE_EOS;
 }

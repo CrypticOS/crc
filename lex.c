@@ -2,19 +2,25 @@
 
 // Main lexer. Lexes a string from a given point.
 int lex(struct Token *reading, char string[], size_t *c) {
-	while (string[*c] == ' ') {
+	while (string[*c] == ' ' || string[*c] == '\n') {
 		(*c)++;
 	}
 
-	// EOF
-	if (string[*c] == '\0') {
-		return -1;
+	if (string[*c] == '`') {
+		(*c)++;
+		while (string[*c] != '`') {
+			putchar(string[*c]);
+			(*c)++;
+		}
 	}
-	
+
 	reading->type = 0;
 	reading->value = 0;
 
 	switch (string[*c]) {
+	case '\0':
+		reading->type = FILE_END;
+		return 0;
 	case '+':
 		reading->type = ADD; (*c)++;
 		return 0;
@@ -26,6 +32,12 @@ int lex(struct Token *reading, char string[], size_t *c) {
 		return 0;
 	case ')':
 		reading->type = PAREN_RIGHT; (*c)++;
+		return 0;
+	case ';':
+		reading->type = SEMICOLON; (*c)++;
+		return 0;
+	case '=':
+		reading->type = EQUAL; (*c)++;
 		return 0;
 	}
 
