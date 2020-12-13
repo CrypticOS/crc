@@ -1,19 +1,38 @@
 #include "header.h"
 
+bool skipChar(char c) {
+	if (c == ' ' || c == '\n' || c == '\t') {return 1;}
+	return 0;
+}
+
 // Main lexer. Lexes a string from a given point.
 int lex(struct Token *reading, char string[], size_t *c) {
-	while (string[*c] == ' ' || string[*c] == '\n') {
-		(*c)++;
-	}
-
-	if (string[*c] == '`') {
-		(*c)++;
-		while (string[*c] != '`') {
-			putchar(string[*c]);
+	while (1) {
+		if (string[*c] == '`') {
 			(*c)++;
+			while (string[*c] != '`') {
+				putchar(string[*c]);
+				(*c)++;
+			}
+
+			putchar('\n');
+			(*c)++;
+		} else if (string[*c] == '/' && string[*c + 1] == '/') {
+			(*c) += 2;
+			while (string[*c] != '\n') {
+				(*c)++;
+			}
+
+			(*c)++;
+		} else if (skipChar(string[*c])) {
+			while (skipChar(string[*c])) {
+				(*c)++;
+			}
+		} else {
+			break;
 		}
 	}
-
+	
 	reading->type = 0;
 	reading->value = 0;
 

@@ -1,0 +1,7 @@
+print('H');
+print('i');
+print('!');
+
+// Print 7
+gb = '0' + 7;
+`prt gb`
