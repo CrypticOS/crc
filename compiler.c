@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 				puts("run add");
 				currentReg = 1;
 				break;
-			case TEXT:
+			case FUNCTION:
 				printf("run %s\n", tokens[i].string);
 				break;
 			case EQUAL:

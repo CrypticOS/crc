@@ -45,6 +45,13 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 			(*token)++;
 			break;
 		case PAREN_LEFT:
+			// Only let functions with the next token
+			// a left paren be a function call.
+			if (operator != -1) {
+				if (operatorStack[operator].type == TEXT) {
+					operatorStack[operator].type = FUNCTION;
+				}
+			}
 		case EQUAL:
 			operator++;
 			operatorStack[operator] = reading;
@@ -73,7 +80,7 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 			if (operatorStack[operator].type == PAREN_LEFT) {
 				// Discard left parenthesis
 				operator--;
-			} else if (operatorStack[operator].type == TEXT) {
+			} else if (operatorStack[operator].type == FUNCTION) {
 				// Pop functions
 				popOperatorOutput(tokens, token, operatorStack, &operator);
 			}

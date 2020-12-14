@@ -16,6 +16,7 @@ enum Tokens {
 	FILE_END,
 	BRACKET_LEFT,
 	BRACKET_RIGHT,
+	FUNCTION
 };
 
 enum Parse {

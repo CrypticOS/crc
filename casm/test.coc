@@ -1,4 +1,15 @@
-// Test not equal
-equ (1 1) {
-	print('A');
+`; Test not equal`
+equ (1, 1) {
+	print('H');
 }
+
+ga = 'i';
+print();
+
+`; Store 1 in ga and 2 in gb`
+(1 2);
+1;2;
+
+`; Call function again instead of resetting value`
+print('!') print();
+
