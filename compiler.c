@@ -43,9 +43,6 @@ int main(int argc, char *argv[]) {
 	
 	fclose(reader);
 	
-	// Include compiler assembly
-	puts("inc \"casm/main.casm\"");
-	
 	size_t c = 0;
 	struct Token tokens[10];
 	size_t token = 0;
@@ -71,6 +68,10 @@ int main(int argc, char *argv[]) {
 				printf("set %s %d\n", regs[currentReg], tokens[i].value);
 				currentReg++;
 				break;
+			case TEXT:
+				printf("set %s %s\n", regs[currentReg], tokens[i].string);
+				currentReg++;
+				break;
 			case ADD:
 				puts("run add");
 				currentReg = 1;
@@ -91,10 +92,10 @@ int main(int argc, char *argv[]) {
 		} else if (result == PARSE_NEQU) {
 			block++;
 			generateLabel(currentLabel, blockStack[block]);
-			blockStack[block][2] = ':';
-			blockStack[block][2] = '\0';
 
 			printf("equ ga gb %s\n", blockStack[block]);
+			blockStack[block][2] = ':';
+			blockStack[block][3] = '\0';
 			currentLabel++;
 		} else if (result == PARSE_EQU) {
 			char l1[4];
