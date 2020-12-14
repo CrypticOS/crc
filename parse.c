@@ -25,11 +25,17 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 	// Operator stack
 	struct Token operatorStack[10];
 	int operator = -1;
+	
+	int blockType;
 
 	// Based on the Shunting Yard Algorithm
 	// Designed by Edsger Dijkstra in 1961.
 	while (!lex(&reading, string, c)) {
 		switch (reading.type) {
+		case BRACKET_LEFT:
+			return blockType;
+		case BRACKET_RIGHT:
+			return PARSE_END;
 		case FILE_END:
 			return PARSE_EOF;
 		case SEMICOLON:
@@ -40,9 +46,19 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 			break;
 		case PAREN_LEFT:
 		case EQUAL:
-		case TEXT:
 			operator++;
 			operatorStack[operator] = reading;
+			break;
+		case TEXT:
+			if (!strcmp(reading.string, "equ")) {
+				blockType = PARSE_EQU;
+			} else if (!strcmp(reading.string, "nequ")) {
+				blockType = PARSE_NEQU;
+			} else {
+				operator++;
+				operatorStack[operator] = reading;
+			}
+			
 			break;
 		case PAREN_RIGHT:
 			while (operator != -1 && operatorStack[operator].type != PAREN_LEFT) {
@@ -82,7 +98,7 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 		puts("; ERR: Mismatched left parenthesis.3");
 		return PARSE_ERR;
 	}
-
+	
 	endRead:
 	
 	// Push the remaining operators to the output

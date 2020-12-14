@@ -36,29 +36,38 @@ int lex(struct Token *reading, char string[], size_t *c) {
 	reading->type = 0;
 	reading->value = 0;
 
-	switch (string[*c]) {
+	switch (string[(*c)++]) {
 	case '\0':
 		reading->type = FILE_END;
 		return 0;
+	case '{':
+		reading->type = BRACKET_LEFT;
+		return 0;
+	case '}':
+		reading->type = BRACKET_RIGHT;
+		return 0;
 	case '+':
-		reading->type = ADD; (*c)++;
+		reading->type = ADD; 
 		return 0;
 	case '*':
-		reading->type = MULT; (*c)++;
+		reading->type = MULT;
 		return 0;
 	case '(':
-		reading->type = PAREN_LEFT; (*c)++;
+		reading->type = PAREN_LEFT;
 		return 0;
 	case ')':
-		reading->type = PAREN_RIGHT; (*c)++;
+		reading->type = PAREN_RIGHT;
 		return 0;
 	case ';':
-		reading->type = SEMICOLON; (*c)++;
+		reading->type = SEMICOLON;
 		return 0;
 	case '=':
-		reading->type = EQUAL; (*c)++;
+		reading->type = EQUAL;
 		return 0;
 	}
+
+	// Nothing matched, go back
+	(*c)--;
 
 	// Lex text (function names)
 	while ((string[*c] >= 'a' && string[*c] <= 'z')

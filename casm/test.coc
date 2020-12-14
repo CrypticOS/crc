@@ -1,7 +1,4 @@
-print('H');
-print('i');
-print('!');
-
-// Print 7
-gb = '0' + 7;
-`prt gb`
+// Test not equal
+equ (1 1) {
+	print('A');
+}

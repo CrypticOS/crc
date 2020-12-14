@@ -13,13 +13,21 @@ enum Tokens {
 	PAREN_RIGHT,
 	SEMICOLON,
 	EQUAL,
-	FILE_END
+	FILE_END,
+	BRACKET_LEFT,
+	BRACKET_RIGHT,
 };
 
 enum Parse {
 	PARSE_ERR,
 	PARSE_EOS, // (end of statement)
-	PARSE_EOF
+	PARSE_EOF,
+	
+	PARSE_END, // }
+
+	// Block statements
+	PARSE_EQU,
+	PARSE_NEQU
 };
 
 struct Token {
