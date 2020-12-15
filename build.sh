@@ -1,5 +1,6 @@
+#!/bin/bash
 tcc lex.c compiler.c parse.c -o cosc
-./cosc casm/test.coc > a
+./cosc casm/test.crc > a
 cat a
 echo "-----"
 casm a a > b

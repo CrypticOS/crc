@@ -16,7 +16,8 @@ enum Tokens {
 	FILE_END,
 	BRACKET_LEFT,
 	BRACKET_RIGHT,
-	FUNCTION
+	FUNCTION,
+	VAR
 };
 
 enum Parse {
@@ -28,7 +29,8 @@ enum Parse {
 
 	// Block statements
 	PARSE_EQU,
-	PARSE_NEQU
+	PARSE_NEQU,
+	PARSE_LOOP
 };
 
 struct Token {

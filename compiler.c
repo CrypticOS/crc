@@ -22,9 +22,9 @@ void generateLabel(size_t label, char buffer[]) {
 }
 
 int main(int argc, char *argv[]) {
-	if (argc == 1) {return -1;}
+	if (argc == 1) {puts("No file."); return 1;}
 	FILE *reader = fopen(argv[1], "r");
-	if (reader == NULL) {return -1;}
+	if (reader == NULL) {puts("Bad file."); return 1;}
 
 	// Load 
 	char *load = malloc(1000 * sizeof(char));
@@ -74,10 +74,14 @@ int main(int argc, char *argv[]) {
 				break;
 			case ADD:
 				puts("run add");
-				currentReg = 1;
+				currentReg = 0;
 				break;
 			case FUNCTION:
 				printf("run %s\n", tokens[i].string);
+				break;
+			case VAR:
+				printf("var %s ga\n", tokens[i-1].string);
+				i++;
 				break;
 			case EQUAL:
 				i++;
@@ -92,10 +96,20 @@ int main(int argc, char *argv[]) {
 		} else if (result == PARSE_NEQU) {
 			block++;
 			generateLabel(currentLabel, blockStack[block]);
-
 			printf("equ ga gb %s\n", blockStack[block]);
-			blockStack[block][2] = ':';
-			blockStack[block][3] = '\0';
+
+			// Push the label
+			strcat(blockStack[block], ":");
+			currentLabel++;
+		} else if (result == PARSE_LOOP) {
+			char l[4];
+			block++;
+			generateLabel(currentLabel, l);
+			printf("%s:\n", l);
+
+			// Push the label
+			strcpy(blockStack[block], "jmp ");
+			strcat(blockStack[block], l);
 			currentLabel++;
 		} else if (result == PARSE_EQU) {
 			char l1[4];
@@ -104,11 +118,12 @@ int main(int argc, char *argv[]) {
 			currentLabel++;
 			generateLabel(currentLabel, l2);
 			currentLabel++;
-			
+
 			printf("equ ga gb %s\n", l2);
 			printf("jmp %s\n", l1);
 			printf("%s:\n", l2);
 
+			// Push a the label
 			block++;
 			strcpy(blockStack[block], l1);
 			strcat(blockStack[block], ":");

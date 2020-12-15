@@ -61,6 +61,11 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 				blockType = PARSE_EQU;
 			} else if (!strcmp(reading.string, "nequ")) {
 				blockType = PARSE_NEQU;
+			} else if (!strcmp(reading.string, "var")) {
+				operator++;
+				operatorStack[operator].type = VAR;
+			} else if (!strcmp(reading.string, "loop")) {
+				blockType = PARSE_LOOP;
 			} else {
 				operator++;
 				operatorStack[operator] = reading;
@@ -86,7 +91,7 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 			}
 			
 			break;
-		default:
+		case ADD:
 			// Else, it is an operator. (+, *, /)
 	
 			// Push remaining operators to output
@@ -102,7 +107,7 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 
 	if (operatorStack[operator].type == PAREN_LEFT
 		|| operatorStack[operator].type == PAREN_RIGHT) {
-		puts("; ERR: Mismatched left parenthesis.3");
+		puts("; ERR: Mismatched left parenthesis.");
 		return PARSE_ERR;
 	}
 	
