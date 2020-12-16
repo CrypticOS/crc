@@ -79,10 +79,6 @@ int main(int argc, char *argv[]) {
 			case FUNCTION:
 				printf("run %s\n", tokens[i].string);
 				break;
-			case VAR:
-				printf("var %s ga\n", tokens[i-1].string);
-				i++;
-				break;
 			case EQUAL:
 				i++;
 				printf("set %s ga\n", tokens[i].string);
@@ -90,6 +86,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
+		// Parse Block statements
 		if (result == PARSE_END) {			
 			printf("%s\n", blockStack[block]);
 			block--;

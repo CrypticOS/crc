@@ -25,7 +25,8 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 	// Operator stack
 	struct Token operatorStack[10];
 	int operator = -1;
-	
+
+	// What type of block to push in asm
 	int blockType;
 
 	// Based on the Shunting Yard Algorithm
@@ -61,9 +62,6 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 				blockType = PARSE_EQU;
 			} else if (!strcmp(reading.string, "nequ")) {
 				blockType = PARSE_NEQU;
-			} else if (!strcmp(reading.string, "var")) {
-				operator++;
-				operatorStack[operator].type = VAR;
 			} else if (!strcmp(reading.string, "loop")) {
 				blockType = PARSE_LOOP;
 			} else {
