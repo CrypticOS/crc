@@ -1,5 +1,13 @@
 #include "header.h"
 
+bool isAlpha(char c) {
+	if (((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) || c == '.' || c == '&') {
+		return 1;
+	}
+
+	return 0;
+}
+
 bool skipChar(char c) {
 	if (c == ' ' || c == '\n' || c == '\t' || c == ',') {return 1;}
 	return 0;
@@ -70,8 +78,7 @@ int lex(struct Token *reading, char string[], size_t *c) {
 	(*c)--;
 
 	// Lex text (function names)
-	while ((string[*c] >= 'a' && string[*c] <= 'z')
-		|| (string[*c] >= 'A' && string[*c] <= 'Z')) {
+	while (isAlpha(string[*c])) {
 		reading->type = TEXT;
 		reading->string[reading->value] = string[*c];
 		reading->value++;

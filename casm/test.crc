@@ -10,3 +10,5 @@ loop {
 	print(i);
 }
 `LA:`
+
+print(10);

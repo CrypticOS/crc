@@ -48,8 +48,11 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 		case PAREN_LEFT:
 			// Only let functions with the next token
 			// a left paren be a function call.
-			if (operator != -1) {
-				if (operatorStack[operator].type == TEXT) {
+			if (*token != 0) {
+				(*token)--;
+				if (tokens[*token].type == TEXT) {
+					operator++;
+					operatorStack[operator] = tokens[*token];
 					operatorStack[operator].type = FUNCTION;
 				}
 			}
@@ -65,8 +68,10 @@ int parse(size_t *c, struct Token *tokens, size_t *token, char string[]) {
 			} else if (!strcmp(reading.string, "loop")) {
 				blockType = PARSE_LOOP;
 			} else {
-				operator++;
-				operatorStack[operator] = reading;
+				// Add both to operator and output stack
+				// so type can be determined later
+				tokens[*token] = reading;
+				(*token)++;
 			}
 			
 			break;
