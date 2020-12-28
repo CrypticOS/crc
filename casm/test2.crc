@@ -1,12 +1,12 @@
 // Main array
 `arr a 10`
-`var i 0`
 
 // Includes
-`inc "casm/complib.casm"`
+`inc "lib/main.casm"`
 `jmp LA`
 	`inc "$kernel/get.casm"`
 `LA:`
 
-k.get(GET, 9, 'A');
-
+k.get(SET, &a, 'A');
+k.get(GET, &a);
+`prt gr`
