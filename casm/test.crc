@@ -1,14 +1,2 @@
-`var i '0'`
-`inc "casm/complib.casm"`
-
-loop {
-	equ (i, '9') {
-		`jmp LA`
-	}
-
-	`add i 1`
-	print(i);
-}
-`LA:`
-
-print(10);
+// Parser Test
+myFunc(1, 1 + 2);
